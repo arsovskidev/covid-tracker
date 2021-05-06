@@ -5,10 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./assets/css/bootstrap.css?v=6" />
-    <link rel="stylesheet" href="./assets/css/global.css?v=7" />
+    <link rel="stylesheet" href="./assets/css/alertify.css?v=1" />
+    <link rel="stylesheet" href="./assets/css/global.css?v=8" />
     <title>Covid Tracker</title>
   </head>
   <body>
+    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark primary-color-bg">
       <a class="navbar-brand test" href="#">Covid Tracker</a>
       <button
@@ -22,16 +24,86 @@
       >
         <span class="navbar-toggler-icon"></span>
       </button>
-
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav text-center ml-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="#">Home</a>
+            <a class="nav-link" href="#">Statistics</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Information</a>
           </li>
         </ul>
       </div>
     </nav>
+    <!-- Sync Status -->
+    <div class="text-center mt-2">
+      <p class="small primary-color-text">
+        The statistics are synced automatically every 6 hours.
+      </p>
+    </div>
+    <!-- Statistics -->
+    <div class="container">
+      <div class="row mt-5 mb-3">
+        <div class="col-md-6">
+          <select class="custom-select mb-3">
+            <option selected>Today</option>
+            <option value="1">Monthly</option>
+            <option value="2">Last 3 months</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <select class="custom-select mb-3">
+            <option selected>Worldwide</option>
+            <option value="1">Macedonia</option>
+            <option value="2">Serbia</option>
+          </select>
+        </div>
+        <div class="col-md-2 text-center">
+          <button class="btn primary-color-bg text-light">Apply</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card bg-light mb-3">
+            <div class="card-body text-center">
+              <h5>Total Cases</h5>
+              <h2>156,136,462</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card bg-light mb-3">
+            <div class="card-body text-center">
+              <h5>Total Deaths</h5>
+              <h2>3,259,933</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card bg-light mb-3">
+            <div class="card-body text-center">
+              <h5>Total Recovered</h5>
+              <h2>133,555,632</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Graph -->
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-6">
+          <canvas id="activeCasesChart"></canvas>
+        </div>
+        <div class="col-md-6">
+          <canvas id="deathsChart"></canvas>
+        </div>
+      </div>
+    </div>
     <script src="./assets/js/jquery-3.6.0.min.js"></script>
     <script src="./assets/js/bootstrap.bundle.min.js"></script>
+    <script src="./assets/js/chart.min.js"></script>
+    <script src="./assets/js/alertify.js"></script>
+    <script src="./assets/js/app.js"></script>
   </body>
 </html>
