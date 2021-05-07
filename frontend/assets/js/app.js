@@ -88,4 +88,6 @@ let deathsChart = new Chart(deathsChartID, {
   },
 });
 
-alertify.message("Synced on May 6, 2021 at 16:30", 0);
+setTimeout(function (e) {
+  alertify.message("Synced on May 6, 2021 at 16:30", 0);
+}, 1000);
