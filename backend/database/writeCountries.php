@@ -33,5 +33,5 @@ function writeCountries($conn)
         $stmt->execute($data);
     }
 
-    echo "Finished.";
+    echo "Finished.<br>";
 }

@@ -39,15 +39,15 @@
     <!-- Sync Status -->
     <div class="text-center mt-2">
       <p class="small primary-color-text">
-        The statistics are synced automatically every 6 hours.
+        The statistics are synced automatically every 24 hours.
       </p>
     </div>
     <!-- Statistics -->
     <div class="container">
       <div class="row mt-5 mb-3">
         <div class="col-md-6">
-          <select class="custom-select mb-3">
-            <option selected>All Time</option>
+          <select id="time-option" class="custom-select mb-3">
+            <option value="0" selected>All Time</option>
             <option value="1">Today</option>
             <option value="2">Monthly</option>
             <option value="3">Last 3 months</option>
@@ -55,11 +55,13 @@
         </div>
         <div class="col-md-5">
           <select id="countries-option" class="custom-select mb-3">
-            <option selected>Worldwide</option>
+            <option value="global" selected>Worldwide</option>
           </select>
         </div>
         <div class="col-md-1 text-center">
-          <button class="btn primary-color-bg text-light">Apply</button>
+          <button id="apply-filter" class="btn primary-color-bg text-light">
+            Apply
+          </button>
         </div>
       </div>
       <div class="row">
@@ -67,7 +69,7 @@
           <div class="card bg-light mb-3">
             <div class="card-body text-center">
               <h5>Total Cases</h5>
-              <h2>156,136,462</h2>
+              <h2 id="total-cases">-</h2>
             </div>
           </div>
         </div>
@@ -75,7 +77,7 @@
           <div class="card bg-light mb-3">
             <div class="card-body text-center">
               <h5>Total Deaths</h5>
-              <h2>3,259,933</h2>
+              <h2 id="total-deaths">-</h2>
             </div>
           </div>
         </div>
@@ -83,7 +85,7 @@
           <div class="card bg-light mb-3">
             <div class="card-body text-center">
               <h5>Total Recovered</h5>
-              <h2>133,555,632</h2>
+              <h2 id="total-recovered">-</h2>
             </div>
           </div>
         </div>

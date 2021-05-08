@@ -1,6 +1,7 @@
 <?php
 require_once '../config.php';
 require_once 'writeCountries.php';
+require_once 'writeAllTime.php';
 
 $createCountriesTable = "CREATE TABLE IF NOT EXISTS `covid-tracker`.`countries`(
     slug VARCHAR( 128 ) PRIMARY KEY,
@@ -10,3 +11,4 @@ $createCountriesTable = "CREATE TABLE IF NOT EXISTS `covid-tracker`.`countries`(
 $conn->exec($createCountriesTable);
 
 writeCountries($conn);
+writeAllTimeStats($conn);
