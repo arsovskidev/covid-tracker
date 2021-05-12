@@ -4,9 +4,13 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./assets/css/bootstrap.css?v=6" />
-    <link rel="stylesheet" href="./assets/css/alertify.css?v=1" />
-    <link rel="stylesheet" href="./assets/css/global.css?v=8" />
+    <script
+      src="https://kit.fontawesome.com/620eac6137.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="./assets/css/bootstrap.css" />
+    <link rel="stylesheet" href="./assets/css/alertify.css" />
+    <link rel="stylesheet" href="./assets/css/global.css" />
     <title>Covid Tracker</title>
   </head>
   <body>
@@ -67,24 +71,54 @@
         <div class="col-md-4">
           <div class="card bg-light mb-3">
             <div class="card-body text-center">
-              <h5>Total Cases</h5>
-              <h2 id="total-cases">-</h2>
+              <h5>Cases</h5>
+              <i class="fas fa-lungs-virus fa-3x my-3"></i>
+              <div class="row">
+                <div class="col-6">
+                  <h5>Total</h5>
+                  <h2 id="total-cases">-</h2>
+                </div>
+                <div class="col-6">
+                  <h5>New</h5>
+                  <h2 id="new-cases">-</h2>
+                </div>
+              </div>
             </div>
           </div>
         </div>
         <div class="col-md-4">
           <div class="card bg-light mb-3">
             <div class="card-body text-center">
-              <h5>Total Deaths</h5>
-              <h2 id="total-deaths">-</h2>
+              <h5>Deaths</h5>
+              <i class="fas fa-skull-crossbones fa-3x my-3"></i>
+              <div class="row">
+                <div class="col-6">
+                  <h5>Total</h5>
+                  <h2 id="total-deaths">-</h2>
+                </div>
+                <div class="col-6">
+                  <h5>New</h5>
+                  <h2 id="new-deaths">-</h2>
+                </div>
+              </div>
             </div>
           </div>
         </div>
         <div class="col-md-4">
           <div class="card bg-light mb-3">
             <div class="card-body text-center">
-              <h5>Total Recovered</h5>
-              <h2 id="total-recovered">-</h2>
+              <h5>Recovered</h5>
+              <i class="fas fa-lungs fa-3x my-3"></i>
+              <div class="row">
+                <div class="col-6">
+                  <h5>Total</h5>
+                  <h2 id="total-recovered">-</h2>
+                </div>
+                <div class="col-6">
+                  <h5>New</h5>
+                  <h2 id="new-recovered">-</h2>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -93,18 +127,15 @@
     <!-- Graph -->
     <div class="container mt-5">
       <div class="row">
-        <div class="col-md-6">
-          <canvas id="activeCasesChart"></canvas>
-        </div>
-        <div class="col-md-6">
-          <canvas id="deathsChart"></canvas>
+        <div class="col-md-12">
+          <div id="chart"></div>
         </div>
       </div>
     </div>
     <script src="./assets/js/jquery-3.6.0.min.js"></script>
     <script src="./assets/js/bootstrap.bundle.min.js"></script>
-    <script src="./assets/js/chart.min.js"></script>
     <script src="./assets/js/alertify.js"></script>
+    <script src="./assets/js/apexcharts.min.js"></script>
     <script src="./assets/js/app.js"></script>
   </body>
 </html>
