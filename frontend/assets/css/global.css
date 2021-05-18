@@ -15,6 +15,27 @@ nav {
   color: #8375ff;
 }
 
+.ajs-message {
+  color: #000000;
+  background-color: #ffffffbd;
+  border-color: #ffffffbd;
+}
+
+.fs-21 {
+  font-size: 21px;
+}
+
+.pulse {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  30% {
+    transform: scale(1.2);
+    color: #8375ff;
+  }
+}
+
 /* Fonts */
 @font-face {
   font-family: ubuntuRegular;

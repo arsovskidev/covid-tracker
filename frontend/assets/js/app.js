@@ -1,22 +1,112 @@
 $(function () {
-  setTimeout(function (e) {
-    // alertify.message("Synced on May 6, 2021 at 16:30", 0);
-  }, 1000);
-
-  let countriesOption = $("#countries-option");
+  function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
 
   $.ajax({
     type: "GET",
-    url: "../backend/requests/getCountires.php",
+    url: "../backend/endpoints/list-countries.php",
     dataType: "json",
     success: function (countries) {
       $.each(countries, function (index, value) {
         let node = `<option value="${value["slug"]}">${value["country"]}</option>`;
-        countriesOption.append(node);
+        $("#countries-option").append(node);
       });
     },
   });
 
+  $.ajax({
+    type: "GET",
+    url: "../backend/endpoints/list-summary.php?country=global",
+    dataType: "json",
+    success: function (summary) {
+      $("#total-confirmed").text(numberWithCommas(summary["total_confirmed"]));
+
+      $("#total-active").text(
+        numberWithCommas(
+          summary["total_confirmed"] -
+            summary["total_deaths"] -
+            summary["total_recovered"]
+        )
+      );
+      $("#new-active").text(numberWithCommas(summary["new_confirmed"]));
+
+      $("#total-deaths").text(numberWithCommas(summary["total_deaths"]));
+      $("#new-deaths").text(numberWithCommas(summary["new_deaths"]));
+
+      $("#total-recovered").text(numberWithCommas(summary["total_recovered"]));
+      $("#new-recovered").text(numberWithCommas(summary["new_recovered"]));
+
+      alertify.message("Last synced on " + summary["date"], 5);
+    },
+  });
+
+  $("#apply-filter").on("click", function () {
+    timeOptionSelected = $("#time-option option").filter(":selected").text();
+    countriesOptionSelectedValue = $("#countries-option option")
+      .filter(":selected")
+      .val();
+    countriesOptionSelectedText = $("#countries-option option")
+      .filter(":selected")
+      .text();
+
+    if (timeOptionSelected == "Today") {
+      $.ajax({
+        type: "GET",
+        url:
+          "../backend/endpoints/list-summary.php?country=" +
+          countriesOptionSelectedValue,
+        dataType: "json",
+        success: function (summary) {
+          if (summary["total_confirmed"]) {
+            $("#total-confirmed").text(
+              numberWithCommas(summary["total_confirmed"])
+            );
+
+            $("#total-active").text(
+              numberWithCommas(
+                summary["total_confirmed"] -
+                  summary["total_deaths"] -
+                  summary["total_recovered"]
+              )
+            );
+            $("#new-active").text(numberWithCommas(summary["new_confirmed"]));
+
+            $("#total-deaths").text(numberWithCommas(summary["total_deaths"]));
+            $("#new-deaths").text(numberWithCommas(summary["new_deaths"]));
+
+            $("#total-recovered").text(
+              numberWithCommas(summary["total_recovered"])
+            );
+            $("#new-recovered").text(
+              numberWithCommas(summary["new_recovered"])
+            );
+
+            alertify.message(
+              "Filtering data for " + countriesOptionSelectedText + "!",
+              5
+            );
+          } else {
+            $("#total-confirmed").text("-");
+            $("#total-active").text("-");
+            $("#new-active").text("-");
+            $("#total-deaths").text("-");
+            $("#new-deaths").text("-");
+            $("#total-recovered").text("-");
+            $("#new-recovered").text("-");
+
+            alertify.error("No data for this country!");
+          }
+        },
+      });
+    } else if (timeOptionSelected == "Monthly") {
+      alertify.error("Under development for Monthly Data!");
+    } else {
+      alertify.error("Under development for 3 Months Data!");
+    }
+  });
+
+  // Chart.
   var options = {
     chart: {
       height: 350,
