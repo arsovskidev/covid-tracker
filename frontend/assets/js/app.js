@@ -5,7 +5,7 @@ $(function () {
 
   $.ajax({
     type: "GET",
-    url: "../backend/endpoints/list-countries.php",
+    url: "../backend/endpoints/api.php?list-countries",
     dataType: "json",
     success: function (countries) {
       $.each(countries, function (index, value) {
@@ -17,27 +17,35 @@ $(function () {
 
   $.ajax({
     type: "GET",
-    url: "../backend/endpoints/list-summary.php?country=global",
+    url: "../backend/endpoints/api.php?list-statistics=global",
     dataType: "json",
-    success: function (summary) {
-      $("#total-confirmed").text(numberWithCommas(summary["total_confirmed"]));
-
-      $("#total-active").text(
-        numberWithCommas(
-          summary["total_confirmed"] -
-            summary["total_deaths"] -
-            summary["total_recovered"]
-        )
+    success: function (stats) {
+      $("#total-confirmed").text(
+        numberWithCommas(stats["today"]["total"]["total_confirmed"])
       );
-      $("#new-active").text(numberWithCommas(summary["new_confirmed"]));
+      $("#total-active").text(
+        numberWithCommas(stats["today"]["total"]["total_active"])
+      );
+      $("#total-recovered").text(
+        numberWithCommas(stats["today"]["total"]["total_recovered"])
+      );
+      $("#total-deaths").text(
+        numberWithCommas(stats["today"]["total"]["total_deaths"])
+      );
 
-      $("#total-deaths").text(numberWithCommas(summary["total_deaths"]));
-      $("#new-deaths").text(numberWithCommas(summary["new_deaths"]));
+      if (stats["today"]["new"]["new_active"] < 0) {
+        $("#new-active").text("-");
+      } else {
+        numberWithCommas(stats["today"]["new"]["new_active"]);
+      }
+      $("#new-deaths").text(
+        numberWithCommas(stats["today"]["new"]["new_deaths"])
+      );
+      $("#new-recovered").text(
+        numberWithCommas(stats["today"]["new"]["new_recovered"])
+      );
 
-      $("#total-recovered").text(numberWithCommas(summary["total_recovered"]));
-      $("#new-recovered").text(numberWithCommas(summary["new_recovered"]));
-
-      alertify.message("Last synced on " + summary["date"], 5);
+      alertify.message("Last synced on " + stats["date"], 5);
     },
   });
 
@@ -54,32 +62,34 @@ $(function () {
       $.ajax({
         type: "GET",
         url:
-          "../backend/endpoints/list-summary.php?country=" +
+          "../backend/endpoints/api.php?list-statistics=" +
           countriesOptionSelectedValue,
         dataType: "json",
-        success: function (summary) {
-          if (summary["total_confirmed"]) {
+        success: function (stats) {
+          if (stats != 400) {
             $("#total-confirmed").text(
-              numberWithCommas(summary["total_confirmed"])
+              numberWithCommas(stats["today"]["total"]["total_confirmed"])
             );
-
             $("#total-active").text(
-              numberWithCommas(
-                summary["total_confirmed"] -
-                  summary["total_deaths"] -
-                  summary["total_recovered"]
-              )
+              numberWithCommas(stats["today"]["total"]["total_active"])
             );
-            $("#new-active").text(numberWithCommas(summary["new_confirmed"]));
-
-            $("#total-deaths").text(numberWithCommas(summary["total_deaths"]));
-            $("#new-deaths").text(numberWithCommas(summary["new_deaths"]));
-
             $("#total-recovered").text(
-              numberWithCommas(summary["total_recovered"])
+              numberWithCommas(stats["today"]["total"]["total_recovered"])
+            );
+            $("#total-deaths").text(
+              numberWithCommas(stats["today"]["total"]["total_deaths"])
+            );
+
+            if (stats["today"]["new"]["new_active"] < 0) {
+              $("#new-active").text("-");
+            } else {
+              numberWithCommas(stats["today"]["new"]["new_active"]);
+            }
+            $("#new-deaths").text(
+              numberWithCommas(stats["today"]["new"]["new_deaths"])
             );
             $("#new-recovered").text(
-              numberWithCommas(summary["new_recovered"])
+              numberWithCommas(stats["today"]["new"]["new_recovered"])
             );
 
             alertify.message(
