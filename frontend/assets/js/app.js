@@ -4,7 +4,7 @@ $(function () {
   }
 
   // Monthly data chart.
-  let monthly_chart_config = {
+  const monthly_chart_config = {
     chart: {
       id: "monthly_chart",
       height: 350,
@@ -23,7 +23,7 @@ $(function () {
     },
   };
 
-  let monthly_chart = new ApexCharts(
+  const monthly_chart = new ApexCharts(
     document.querySelector("#monthly-chart"),
     monthly_chart_config
   );
@@ -49,6 +49,9 @@ $(function () {
     monthly_chart.updateOptions({
       xaxis: {
         categories: dates,
+        labels: {
+          show: false,
+        },
       },
     });
 
@@ -72,12 +75,17 @@ $(function () {
     ]);
   }
 
+  let allCountriesStatistics = [];
+
   $.ajax({
     type: "GET",
     url: "../backend/endpoints/api.php?list-countries",
     dataType: "json",
+    async: false,
     success: function (countries) {
-      $.each(countries, function (index, value) {
+      allCountriesStatistics = countries["statistics"];
+      console.log(allCountriesStatistics);
+      $.each(countries["countries"], function (index, value) {
         let node = `<option value="${value["slug"]}">${value["country"]}</option>`;
         $("#countries-option").append(node);
       });
@@ -189,21 +197,30 @@ $(function () {
       alertify.error("Under development for 3 Months Data!");
     }
   });
-});
 
-// {
-//   name: "Total",
-//   data: [10, 20, 30, 0, 50, 60, 70, 80, 90, 100, 110, 120],
-// },
-// {
-//   name: "Active",
-//   data: [20, 30, 40, 50, 0, 70, 80, 90, 100, 110, 120, 130],
-// },
-// {
-//   name: "Deaths",
-//   data: [30, 40, 50, 60, 70, 0, 90, 100, 110, 120, 130, 140],
-// },
-// {
-//   name: "Recovered",
-//   data: [40, 50, 60, 70, 80, 90, 0, 110, 120, 130, 140, 150],
-// },
+  new gridjs.Grid({
+    columns: [
+      { id: "slug", name: "Country" },
+      { id: "total_confirmed", name: "Total Confirmed" },
+      { id: "total_deaths", name: "Total Deaths" },
+      { id: "total_recovered", name: "Total Recovered" },
+      { id: "total_active", name: "Total Active" },
+    ],
+    data: () =>
+      allCountriesStatistics.map((country) => [
+        country.country,
+        country.total_confirmed,
+        country.total_deaths,
+        country.total_recovered,
+        country.total_active,
+      ]),
+    search: {
+      enabled: true,
+    },
+    pagination: {
+      enabled: true,
+      limit: 10,
+      summary: true,
+    },
+  }).render(document.getElementById("countries-grid"));
+});

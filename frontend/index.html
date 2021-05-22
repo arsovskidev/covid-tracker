@@ -10,7 +10,8 @@
     ></script>
     <link rel="stylesheet" href="./assets/css/bootstrap.css" />
     <link rel="stylesheet" href="./assets/css/alertify.css" />
-    <link rel="stylesheet" href="./assets/css/global.css?v=7" />
+    <link rel="stylesheet" href="./assets/css/mermaid.min.css" />
+    <link rel="stylesheet" href="./assets/css/global.css" />
     <title>Covid Tracker</title>
   </head>
   <body>
@@ -145,10 +146,17 @@
       </div>
     </div>
     <!-- Graph -->
-    <div class="container mt-5">
+    <div class="container my-5">
       <div class="row">
         <div class="col-md-12">
           <div id="monthly-chart"></div>
+        </div>
+      </div>
+    </div>
+    <div class="container my-5">
+      <div class="row">
+        <div class="col-md-12">
+          <div id="countries-grid"></div>
         </div>
       </div>
     </div>
@@ -156,6 +164,7 @@
     <script src="./assets/js/bootstrap.bundle.min.js"></script>
     <script src="./assets/js/alertify.js"></script>
     <script src="./assets/js/apexcharts.min.js"></script>
+    <script src="./assets/js/gridjs.production.min.js"></script>
     <script src="./assets/js/app.js"></script>
   </body>
 </html>

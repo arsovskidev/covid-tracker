@@ -3,9 +3,26 @@ require_once '../config.php';
 
 try {
     if (isset($_GET["list-countries"])) {
-        $getAllCountries = $conn->query("SELECT * FROM countries");
-        $countries = $getAllCountries->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode($countries);
+        $getAllCountries = $conn->prepare("SELECT * FROM countries");
+        $getAllCountries->execute();
+        $getAllCountries = $getAllCountries->fetchAll(PDO::FETCH_ASSOC);
+
+        $getAllStatistics = $conn->prepare("
+        SELECT `slug`, `country`,
+        `confirmed` AS 'total_confirmed',
+        `deaths` AS 'total_deaths',
+        `recovered` AS 'total_recovered',
+        `active` AS 'total_active',
+        `date`
+        FROM `statistics` WHERE `date` = :date");
+
+        $getAllStatistics->execute(['date' => $yesterday]);
+        $getAllStatistics = $getAllStatistics->fetchAll(PDO::FETCH_ASSOC);
+
+        $data['countries'] = $getAllCountries;
+        $data['statistics'] = $getAllStatistics;
+
+        echo json_encode($data);
     } else if (isset($_GET["list-statistics"])) {
         $slug = $_GET["list-statistics"];
         $data = [];
@@ -26,19 +43,18 @@ try {
             SUM(`active`) AS 'total_active'
             FROM `statistics` WHERE `date` = :date");
 
-            $getMonthData = $conn->prepare("
+            $getChartData = $conn->prepare("
             SELECT `date`, SUM(`confirmed`) AS 'confirmed',
             SUM(`deaths`) AS 'deaths',
             SUM(`recovered`) AS 'recovered',
             SUM(`active`) AS 'active'
             FROM `statistics`
-            WHERE `date` LIKE :date
             GROUP BY `date`");
 
             $getTotalToday->execute(['date' => $yesterday]);
             $getTotalYesterday->execute(['date' => $ereyesterday]);
 
-            $getMonthData->execute(['date' => $currentMonth . "%"]);
+            $getChartData->execute();
         } else {
 
             $getTotalToday = $conn->prepare("
@@ -55,23 +71,21 @@ try {
             SUM(`active`) AS 'total_active'
             FROM `statistics` WHERE `date` = :date AND slug = :slug");
 
-            $getMonthData = $conn->prepare("
+            $getChartData = $conn->prepare("
             SELECT `date`, `confirmed`, `deaths`, `recovered`, `active`
             FROM `statistics`
-            WHERE slug = :slug
-            AND date LIKE :date
-            ORDER BY `statistics`.`date` ASC");
+            WHERE slug = :slug");
 
             $getTotalToday->execute(['date' => $yesterday, 'slug' => $slug]);
             $getTotalYesterday->execute(['date' => $ereyesterday, 'slug' => $slug]);
 
-            $getMonthData->execute(['date' => $currentMonth . "%", 'slug' => $slug]);
+            $getChartData->execute(['slug' => $slug]);
         }
 
         // Fetch the prepared queries.
         $getTotalToday = $getTotalToday->fetch(PDO::FETCH_ASSOC);
         $getTotalYesterday = $getTotalYesterday->fetch(PDO::FETCH_ASSOC);
-        $getMonthData = $getMonthData->fetchAll(PDO::FETCH_ASSOC);
+        $getChartData = $getChartData->fetchAll(PDO::FETCH_ASSOC);
 
         // Check if there is data or not.
         if ($getTotalToday["total_confirmed"] != null) {
@@ -84,7 +98,7 @@ try {
                 "new_recovered" => $getTotalToday["total_recovered"] - $getTotalYesterday["total_recovered"],
                 "new_active" => $getTotalToday["total_active"] - $getTotalYesterday["total_active"],
             ];
-            $data["monthly-chart"] = $getMonthData;
+            $data["monthly-chart"] = $getChartData;
             echo json_encode($data);
         } else {
             echo 404;

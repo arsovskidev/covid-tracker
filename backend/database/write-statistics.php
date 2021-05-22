@@ -34,10 +34,10 @@ function writeStatistics($conn, $slug, $date)
     try {
         // Create pdo insert query. 
         $sql = "INSERT INTO 
-     statistics (id, slug, confirmed, deaths,
+     statistics (id, slug, country, confirmed, deaths,
      recovered, active, date)
      
-     VALUES (:id, :slug,
+     VALUES (:id, :slug, :country,
      :confirmed, :deaths, :recovered,
      :active, :date) 
      
@@ -63,6 +63,7 @@ function writeStatistics($conn, $slug, $date)
                 $values = [
                     'id' => $id,
                     'slug' => $slug,
+                    'country' => $day["Country"],
                     'confirmed' => $day["Confirmed"],
                     'deaths' => $day["Deaths"],
                     'recovered' => $day["Recovered"],
