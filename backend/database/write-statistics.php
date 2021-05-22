@@ -23,7 +23,8 @@ function writeStatistics($conn, $slug, $date)
         $retry++;
 
         if ($retry === 5) {
-            echo "\nFailed 5 times, aborting stats for country.";
+            echo "\nFailed 5 times, aborting stats for all country.";
+            $conn->rollBack();
             die();
         }
     }
@@ -41,7 +42,7 @@ function writeStatistics($conn, $slug, $date)
      :active, :date) 
      
      ON DUPLICATE KEY UPDATE confirmed=:confirmed, deaths=:deaths,
-     recovered=:recovered, active=:active, date=:date";
+     recovered=:recovered, active=:active";
 
         $stmt = $conn->prepare($sql);
         echo "\nWriting\Updating all stats for " . $slug . " in database... ";
