@@ -3,10 +3,10 @@ $(function () {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
-  // Monthly data chart.
-  const monthly_chart_config = {
+  // Daily data chart.
+  const daily_chart_config = {
     chart: {
-      id: "monthly_chart",
+      id: "daily_chart",
       height: 350,
       type: "line",
     },
@@ -19,19 +19,19 @@ $(function () {
     colors: ["#8375ff", "#fff67a", "#000000", "#a0ff7a"],
     series: [],
     noData: {
-      text: "Loading...",
+      text: "This may take a while...",
     },
   };
 
-  const monthly_chart = new ApexCharts(
-    document.querySelector("#monthly-chart"),
-    monthly_chart_config
+  const daily_chart = new ApexCharts(
+    document.querySelector("#daily-chart"),
+    daily_chart_config
   );
 
-  monthly_chart.render();
+  daily_chart.render();
 
   function updateMontlyChart(data) {
-    // Monthly chart update.
+    // Daily chart update.
     let dates = [];
     let confirmed = [];
     let active = [];
@@ -46,7 +46,7 @@ $(function () {
       recovered.push(value["recovered"]);
     });
 
-    monthly_chart.updateOptions({
+    daily_chart.updateOptions({
       xaxis: {
         categories: dates,
         labels: {
@@ -55,7 +55,7 @@ $(function () {
       },
     });
 
-    monthly_chart.updateSeries([
+    daily_chart.updateSeries([
       {
         name: "Confirmed",
         data: confirmed,
@@ -79,7 +79,7 @@ $(function () {
 
   $.ajax({
     type: "GET",
-    url: "../backend/endpoints/api.php?list-countries",
+    url: "../backend/api/v1.php?list-countries",
     dataType: "json",
     async: false,
     success: function (countries) {
@@ -94,33 +94,33 @@ $(function () {
 
   $.ajax({
     type: "GET",
-    url: "../backend/endpoints/api.php?list-statistics=global",
+    url: "../backend/api/v1.php?list-statistics=global",
     dataType: "json",
     async: false,
     success: function (stats) {
-      updateMontlyChart(stats["monthly-chart"]);
+      updateMontlyChart(stats["daily-chart"]);
 
       $("#total-confirmed").text(
-        numberWithCommas(stats["today"]["total"]["total_confirmed"])
+        numberWithCommas(stats["summary"]["total"]["total_confirmed"])
       );
       $("#total-active").text(
-        numberWithCommas(stats["today"]["total"]["total_active"])
+        numberWithCommas(stats["summary"]["total"]["total_active"])
       );
       $("#total-recovered").text(
-        numberWithCommas(stats["today"]["total"]["total_recovered"])
+        numberWithCommas(stats["summary"]["total"]["total_recovered"])
       );
       $("#total-deaths").text(
-        numberWithCommas(stats["today"]["total"]["total_deaths"])
+        numberWithCommas(stats["summary"]["total"]["total_deaths"])
       );
 
       $("#new-active").text(
-        numberWithCommas(stats["today"]["new"]["new_active"])
+        numberWithCommas(stats["summary"]["new"]["today"]["new_active"])
       );
       $("#new-deaths").text(
-        numberWithCommas(stats["today"]["new"]["new_deaths"])
+        numberWithCommas(stats["summary"]["new"]["today"]["new_deaths"])
       );
       $("#new-recovered").text(
-        numberWithCommas(stats["today"]["new"]["new_recovered"])
+        numberWithCommas(stats["summary"]["new"]["today"]["new_recovered"])
       );
 
       alertify.message("Last synced on " + stats["synced"], 5);
@@ -141,14 +141,31 @@ $(function () {
     $.ajax({
       type: "GET",
       url:
-        "../backend/endpoints/api.php?list-statistics=" +
-        countriesOptionSelectedValue,
+        "../backend/api/v1.php?list-statistics=" + countriesOptionSelectedValue,
       dataType: "json",
       async: false,
       success: function (stats) {
         if (stats != 400) {
           country = stats;
-          updateMontlyChart(stats["monthly-chart"]);
+          updateMontlyChart(stats["daily-chart"]);
+
+          $("#total-confirmed").text(
+            numberWithCommas(country["summary"]["total"]["total_confirmed"])
+          );
+          $("#total-active").text(
+            numberWithCommas(country["summary"]["total"]["total_active"])
+          );
+          $("#total-recovered").text(
+            numberWithCommas(country["summary"]["total"]["total_recovered"])
+          );
+          $("#total-deaths").text(
+            numberWithCommas(country["summary"]["total"]["total_deaths"])
+          );
+
+          alertify.message(
+            "Filter applied for " + countriesOptionSelectedText + "!",
+            5
+          );
         } else {
           $("#total-confirmed").text("-");
           $("#total-active").text("-");
@@ -164,42 +181,47 @@ $(function () {
     });
 
     if (timeOptionSelected == "Today") {
-      $("#total-confirmed").text(
-        numberWithCommas(country["today"]["total"]["total_confirmed"])
-      );
-      $("#total-active").text(
-        numberWithCommas(country["today"]["total"]["total_active"])
-      );
-      $("#total-recovered").text(
-        numberWithCommas(country["today"]["total"]["total_recovered"])
-      );
-      $("#total-deaths").text(
-        numberWithCommas(country["today"]["total"]["total_deaths"])
-      );
-
       $("#new-active").text(
-        numberWithCommas(country["today"]["new"]["new_active"])
+        numberWithCommas(country["summary"]["new"]["today"]["new_active"])
       );
       $("#new-deaths").text(
-        numberWithCommas(country["today"]["new"]["new_deaths"])
+        numberWithCommas(country["summary"]["new"]["today"]["new_deaths"])
       );
       $("#new-recovered").text(
-        numberWithCommas(country["today"]["new"]["new_recovered"])
-      );
-
-      alertify.message(
-        "Filtering data for " + countriesOptionSelectedText + "!",
-        5
+        numberWithCommas(country["summary"]["new"]["today"]["new_recovered"])
       );
     } else if (timeOptionSelected == "Monthly") {
-      alertify.error("Under development for Monthly Data!");
+      $("#new-active").text(
+        numberWithCommas(country["summary"]["new"]["monthly"]["new_active"])
+      );
+      $("#new-deaths").text(
+        numberWithCommas(country["summary"]["new"]["monthly"]["new_deaths"])
+      );
+      $("#new-recovered").text(
+        numberWithCommas(country["summary"]["new"]["monthly"]["new_recovered"])
+      );
     } else {
-      alertify.error("Under development for 3 Months Data!");
+      $("#new-active").text(
+        numberWithCommas(
+          country["summary"]["new"]["three_months"]["new_active"]
+        )
+      );
+      $("#new-deaths").text(
+        numberWithCommas(
+          country["summary"]["new"]["three_months"]["new_deaths"]
+        )
+      );
+      $("#new-recovered").text(
+        numberWithCommas(
+          country["summary"]["new"]["three_months"]["new_recovered"]
+        )
+      );
     }
   });
 
   new gridjs.Grid({
     columns: [
+      { id: "rank", name: "Rank" },
       { id: "slug", name: "Country" },
       { id: "total_confirmed", name: "Total Confirmed" },
       { id: "total_deaths", name: "Total Deaths" },
@@ -208,11 +230,12 @@ $(function () {
     ],
     data: () =>
       allCountriesStatistics.map((country) => [
+        country.rank,
         country.country,
-        country.total_confirmed,
-        country.total_deaths,
-        country.total_recovered,
-        country.total_active,
+        numberWithCommas(country.total_confirmed),
+        numberWithCommas(country.total_deaths),
+        numberWithCommas(country.total_recovered),
+        numberWithCommas(country.total_active),
       ]),
     search: {
       enabled: true,

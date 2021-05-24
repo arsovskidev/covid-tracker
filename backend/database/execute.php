@@ -1,14 +1,9 @@
 <?php
 require_once '../config.php';
-require_once 'write-countries.php';
+require_once 'get-countries.php';
 require_once 'write-statistics.php';
 
 ini_set('max_execution_time', 0);
-
-$createCountriesTable = "CREATE TABLE IF NOT EXISTS `covid-tracker`.`countries`(
-    slug VARCHAR(128) PRIMARY KEY,
-    country VARCHAR( 256) NOT NULL,
-    code VARCHAR(16) NOT NULL);";
 
 $createStatisticsTable = "CREATE TABLE IF NOT EXISTS `covid-tracker`.`statistics` (
     `id` VARCHAR(128) PRIMARY KEY,
@@ -20,8 +15,8 @@ $createStatisticsTable = "CREATE TABLE IF NOT EXISTS `covid-tracker`.`statistics
     `active` INT(64) NOT NULL ,
     `date` VARCHAR(64) NOT NULL);";
 
-$conn->exec($createCountriesTable);
 $conn->exec($createStatisticsTable);
 
-echo "Current date is " . $today . ". \n";
-writeCountries($conn, $today);
+echo "Current date is " . $today . " UTC. \n";
+$allCountries = getCountries($conn);
+writeStatistics($conn, $allCountries, "2020-05-01", $today);
