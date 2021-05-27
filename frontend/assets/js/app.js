@@ -84,7 +84,6 @@ $(function () {
     async: false,
     success: function (countries) {
       allCountriesStatistics = countries["statistics"];
-      console.log(allCountriesStatistics);
       $.each(countries["countries"], function (index, value) {
         let node = `<option value="${value["slug"]}">${value["country"]}</option>`;
         $("#countries-option").append(node);
@@ -99,6 +98,9 @@ $(function () {
     async: false,
     success: function (stats) {
       updateMontlyChart(stats["daily-chart"]);
+      $("#graph-country").text(
+        "Worldwide's line chart showcased every 10th day."
+      );
 
       $("#total-confirmed").text(
         numberWithCommas(stats["summary"]["total"]["total_confirmed"])
@@ -135,6 +137,10 @@ $(function () {
     countriesOptionSelectedText = $("#countries-option option")
       .filter(":selected")
       .text();
+
+    $("#graph-country").text(
+      countriesOptionSelectedText + "'s line chart showcased every 10th day."
+    );
 
     let country = [];
 
