@@ -10,6 +10,7 @@
     ></script>
     <link rel="stylesheet" href="./assets/css/bootstrap.css" />
     <link rel="stylesheet" href="./assets/css/alertify.css" />
+    <link rel="stylesheet" href="./assets/css/mermaid.min.css" />
     <link rel="stylesheet" href="./assets/css/global.css" />
     <title>Covid Tracker</title>
   </head>
@@ -35,7 +36,12 @@
             <a class="nav-link" href="#">Statistics</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Information</a>
+            <a
+              class="nav-link"
+              href="https://github.com/arshetamine/covid-tracker"
+              target="_blank"
+              >Github</a
+            >
           </li>
         </ul>
       </div>
@@ -68,25 +74,40 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-4">
+        <div class="col-lg-6 mx-auto">
           <div class="card bg-light mb-3">
             <div class="card-body text-center">
-              <h5>Cases</h5>
-              <i class="fas fa-lungs-virus fa-3x my-3"></i>
+              <h5>Confirmed</h5>
+              <i class="fas fa-lungs-virus fa-3x my-3 pulse"></i>
               <div class="row">
-                <div class="col-6">
-                  <h5>Total</h5>
-                  <h2 id="total-cases">-</h2>
-                </div>
-                <div class="col-6">
-                  <h5>New</h5>
-                  <h2 id="new-cases">-</h2>
+                <div class="col-12">
+                  <h2 id="total-confirmed">-</h2>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-md-4">
+      </div>
+      <div class="row">
+        <div class="col-lg-4">
+          <div class="card bg-light mb-3">
+            <div class="card-body text-center">
+              <h5>Active</h5>
+              <i class="fas fa-head-side-mask fa-3x my-3"></i>
+              <div class="row">
+                <div class="col-6">
+                  <h5>Total</h5>
+                  <h2 id="total-active" class="fs-21">-</h2>
+                </div>
+                <div class="col-6">
+                  <h5>New</h5>
+                  <h2 id="new-active" class="fs-21">-</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
           <div class="card bg-light mb-3">
             <div class="card-body text-center">
               <h5>Deaths</h5>
@@ -94,17 +115,17 @@
               <div class="row">
                 <div class="col-6">
                   <h5>Total</h5>
-                  <h2 id="total-deaths">-</h2>
+                  <h2 id="total-deaths" class="fs-21">-</h2>
                 </div>
                 <div class="col-6">
                   <h5>New</h5>
-                  <h2 id="new-deaths">-</h2>
+                  <h2 id="new-deaths" class="fs-21">-</h2>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-lg-4">
           <div class="card bg-light mb-3">
             <div class="card-body text-center">
               <h5>Recovered</h5>
@@ -112,11 +133,11 @@
               <div class="row">
                 <div class="col-6">
                   <h5>Total</h5>
-                  <h2 id="total-recovered">-</h2>
+                  <h2 id="total-recovered" class="fs-21">-</h2>
                 </div>
                 <div class="col-6">
                   <h5>New</h5>
-                  <h2 id="new-recovered">-</h2>
+                  <h2 id="new-recovered" class="fs-21">-</h2>
                 </div>
               </div>
             </div>
@@ -125,10 +146,18 @@
       </div>
     </div>
     <!-- Graph -->
-    <div class="container mt-5">
+    <div class="container my-5">
       <div class="row">
         <div class="col-md-12">
-          <div id="chart"></div>
+          <div id="daily-chart"></div>
+        </div>
+      </div>
+      <p id="graph-country" class="text-center small text-muted"></p>
+    </div>
+    <div class="container my-5">
+      <div class="row">
+        <div class="col-md-12">
+          <div id="countries-grid"></div>
         </div>
       </div>
     </div>
@@ -136,6 +165,7 @@
     <script src="./assets/js/bootstrap.bundle.min.js"></script>
     <script src="./assets/js/alertify.js"></script>
     <script src="./assets/js/apexcharts.min.js"></script>
+    <script src="./assets/js/gridjs.production.min.js"></script>
     <script src="./assets/js/app.js"></script>
   </body>
 </html>
