@@ -3,33 +3,6 @@ $(function () {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
-  // Daily data chart.
-  const daily_chart_config = {
-    chart: {
-      id: "daily_chart",
-      height: 350,
-      type: "line",
-    },
-    stroke: {
-      curve: "smooth",
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    colors: ["#8375ff", "#fff67a", "#000000", "#a0ff7a"],
-    series: [],
-    noData: {
-      text: "This may take a while...",
-    },
-  };
-
-  const daily_chart = new ApexCharts(
-    document.querySelector("#daily-chart"),
-    daily_chart_config
-  );
-
-  daily_chart.render();
-
   function updateDailyChart(data) {
     // Daily chart update.
     let dates = [];
@@ -74,6 +47,33 @@ $(function () {
       },
     ]);
   }
+
+  // Daily data chart.
+  const daily_chart_config = {
+    chart: {
+      id: "daily_chart",
+      height: 350,
+      type: "line",
+    },
+    stroke: {
+      curve: "smooth",
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    colors: ["#8375ff", "#fff67a", "#000000", "#a0ff7a"],
+    series: [],
+    noData: {
+      text: "This may take a while...",
+    },
+  };
+
+  const daily_chart = new ApexCharts(
+    document.querySelector("#daily-chart"),
+    daily_chart_config
+  );
+
+  daily_chart.render();
 
   let allCountriesStatistics = [];
 
@@ -128,6 +128,34 @@ $(function () {
       alertify.message("Last synced on " + stats["synced"], 5);
     },
   });
+
+  new gridjs.Grid({
+    columns: [
+      { id: "rank", name: "Rank" },
+      { id: "slug", name: "Country" },
+      { id: "total_confirmed", name: "Total Confirmed" },
+      { id: "total_deaths", name: "Total Deaths" },
+      { id: "total_recovered", name: "Total Recovered" },
+      { id: "total_active", name: "Total Active" },
+    ],
+    data: () =>
+      allCountriesStatistics.map((country) => [
+        country.rank,
+        country.country,
+        numberWithCommas(country.total_confirmed),
+        numberWithCommas(country.total_deaths),
+        numberWithCommas(country.total_recovered),
+        numberWithCommas(country.total_active),
+      ]),
+    search: {
+      enabled: true,
+    },
+    pagination: {
+      enabled: true,
+      limit: 10,
+      summary: true,
+    },
+  }).render(document.getElementById("countries-grid"));
 
   $("#apply-filter").on("click", function () {
     timeOptionSelected = $("#time-option option").filter(":selected").text();
@@ -224,32 +252,4 @@ $(function () {
       );
     }
   });
-
-  new gridjs.Grid({
-    columns: [
-      { id: "rank", name: "Rank" },
-      { id: "slug", name: "Country" },
-      { id: "total_confirmed", name: "Total Confirmed" },
-      { id: "total_deaths", name: "Total Deaths" },
-      { id: "total_recovered", name: "Total Recovered" },
-      { id: "total_active", name: "Total Active" },
-    ],
-    data: () =>
-      allCountriesStatistics.map((country) => [
-        country.rank,
-        country.country,
-        numberWithCommas(country.total_confirmed),
-        numberWithCommas(country.total_deaths),
-        numberWithCommas(country.total_recovered),
-        numberWithCommas(country.total_active),
-      ]),
-    search: {
-      enabled: true,
-    },
-    pagination: {
-      enabled: true,
-      limit: 10,
-      summary: true,
-    },
-  }).render(document.getElementById("countries-grid"));
 });

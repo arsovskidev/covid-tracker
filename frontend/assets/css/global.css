@@ -11,6 +11,9 @@ nav {
 .primary-color-bg {
   background-color: #8375ff;
 }
+.primary-color-bg-light {
+  background-color: rgba(131, 117, 255, 0.7);
+}
 .primary-color-text {
   color: #8375ff;
 }
