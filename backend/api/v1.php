@@ -4,7 +4,7 @@ require_once '../config.php';
 try {
     // List all countries and their total statistics.
     if (isset($_GET["list-countries"])) {
-        $getAllCountries = $conn->prepare("SELECT DISTINCT slug, country FROM `statistics` ");
+        $getAllCountries = $conn->prepare("SELECT DISTINCT slug, country FROM `statistics` ORDER BY `slug` ASC");
 
         $getAllStatistics = $conn->prepare("
         SELECT @n := @n + 1 AS 'rank',
@@ -19,6 +19,7 @@ try {
 
         $getAllCountries->execute();
         $getAllStatistics->execute(['date' => $yesterday]);
+
         $getAllCountries = $getAllCountries->fetchAll(PDO::FETCH_ASSOC);
         $getAllStatistics = $getAllStatistics->fetchAll(PDO::FETCH_ASSOC);
 
@@ -70,7 +71,8 @@ try {
             SUM(`active`) AS 'active'
             FROM `statistics`
             WHERE `date` LIKE '%0'
-            GROUP BY `date`");
+            GROUP BY `date`
+            ORDER BY `date` ASC");
 
             $getTotalToday->execute(['date' => $yesterday]);
             $getTotalYesterday->execute(['date' => $ereyesterday]);
@@ -111,7 +113,8 @@ try {
             $getChartData = $conn->prepare("
             SELECT `date`, `confirmed`, `deaths`, `recovered`, `active`
             FROM `statistics`
-            WHERE slug = :slug AND `date` LIKE '%0'");
+            WHERE slug = :slug AND `date` LIKE '%0'
+            ORDER BY `date` ASC");
 
             $getTotalToday->execute(['date' => $yesterday, 'slug' => $slug]);
             $getTotalYesterday->execute(['date' => $ereyesterday, 'slug' => $slug]);

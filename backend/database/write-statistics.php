@@ -61,15 +61,18 @@ function writeStatistics($conn, $array, $dateFrom, $dateTo)
                 // Foreach all of the days and add them to the database.
                 foreach ($statistics as $day) {
                     $dateToUnix = strtotime($day["Date"]);
+                    $date = date("Y-m-d", $dateToUnix);
+
                     // ID For statistics for each country is made up by the unix date of the stats added the country slug.
                     // This makes up unique id for each country and it's stats date.
                     // With this unique id it's easy just to update the days statistics whenever we want.
 
-                    $id = $dateToUnix . "-" . $country['slug'];
-                    $date = date("Y-m-d", $dateToUnix);
+                    // Hashing the id to create unique id hash.
+                    $id = $dateToUnix . $country['slug'];
+                    $hash = md5($id);
 
                     $values = [
-                        'id' => $id,
+                        'id' => $hash,
                         'slug' => $country['slug'],
                         'country' => $day["Country"],
                         'confirmed' => $day["Confirmed"],

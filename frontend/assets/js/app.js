@@ -30,7 +30,7 @@ $(function () {
 
   daily_chart.render();
 
-  function updateMontlyChart(data) {
+  function updateDailyChart(data) {
     // Daily chart update.
     let dates = [];
     let confirmed = [];
@@ -97,7 +97,7 @@ $(function () {
     dataType: "json",
     async: false,
     success: function (stats) {
-      updateMontlyChart(stats["daily-chart"]);
+      updateDailyChart(stats["daily-chart"]);
       $("#graph-country").text(
         "Worldwide's line chart showcased every 10th day."
       );
@@ -153,7 +153,7 @@ $(function () {
       success: function (stats) {
         if (stats != 400) {
           country = stats;
-          updateMontlyChart(stats["daily-chart"]);
+          updateDailyChart(stats["daily-chart"]);
 
           $("#total-confirmed").text(
             numberWithCommas(country["summary"]["total"]["total_confirmed"])
