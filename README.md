@@ -4,7 +4,7 @@
 
 ![](https://img.shields.io/badge/html5%20-%23323330.svg?&style=for-the-badge&logo=html5&logoColor=%23E34F26) ![](https://img.shields.io/badge/css3%20-%23323330.svg?&style=for-the-badge&logo=css3&logoColor=%231572B6) ![](https://img.shields.io/badge/javascript%20-%23323330.svg?&style=for-the-badge&logo=javascript&logoColor=%23F7DF1E) ![](https://img.shields.io/badge/php-%23323330.svg?&style=for-the-badge&logo=php&logoColor=%23777BB4) ![](https://img.shields.io/badge/mysql-%23323330.svg?&style=for-the-badge&logo=mysql&logoColor=white)
 
-![](https://i.imgur.com/ejWYmTU.png)
+<img src="https://i.imgur.com/ejWYmTU.png" width="750" />
 
 # Installation
 
@@ -25,8 +25,8 @@ the database and you will be able to start syncing.
 
 ##### Syncing Data
 
-To sync the data you just need to execute the file execute.php
-in the backend/database folder.
+To sync the data you just need to execute the file `execute.php`
+in the `backend/database` folder.
 
 The default start date is 2020-05-01, you can change that in the execute.php
 There is data for 191 countries and around 400 records for each day by writing this documentation.
