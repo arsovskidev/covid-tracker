@@ -32,4 +32,4 @@ The default start date is 2020-05-01, you can change that in the execute.php
 There is data for 191 countries and around 400 records for each day by writing this documentation.
 That will take around 3-5 minutes to finish syncing.
 
-![](https://im4.ezgif.com/tmp/ezgif-4-e91c403699d1.gif)
+![](https://media.giphy.com/media/FtvDeehbeF5yJPXA9V/giphy-downsized-large.gif)
