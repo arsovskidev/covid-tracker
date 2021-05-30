@@ -6,25 +6,10 @@ try {
     if (isset($_GET["list-countries"])) {
         $getAllCountries = $conn->prepare("SELECT DISTINCT slug, country FROM `statistics` ORDER BY `slug` ASC");
 
-        $getAllStatistics = $conn->prepare("
-        SELECT @n := @n + 1 AS 'rank',
-        `slug`, `country`,
-        `confirmed` AS 'total_confirmed',
-        `deaths` AS 'total_deaths',
-        `recovered` AS 'total_recovered',
-        `active` AS 'total_active',
-        `date`
-        FROM `statistics`, (SELECT @n := 0) m WHERE `date` = :date
-        ORDER BY `confirmed` DESC");
-
         $getAllCountries->execute();
-        $getAllStatistics->execute(['date' => $yesterday]);
-
         $getAllCountries = $getAllCountries->fetchAll(PDO::FETCH_ASSOC);
-        $getAllStatistics = $getAllStatistics->fetchAll(PDO::FETCH_ASSOC);
 
         $data['countries'] = $getAllCountries;
-        $data['statistics'] = $getAllStatistics;
 
         echo json_encode($data);
     }
@@ -155,6 +140,103 @@ try {
                 "new_active" => $getTotalToday["total_active"] - $getTotalLastThreeMonths["total_active"],
             ];
             $data["daily-chart"] = $getChartData;
+            echo json_encode($data);
+            // echo "<pre>";
+            // print_r($data);
+        } else {
+            echo 400;
+        }
+    }
+    // List all data for the grid.
+    else if (isset($_GET["list-grid-data"])) {
+        $getStatisticsQuery = "
+        SELECT @n := @n + 1 AS 'rank',
+        `slug`, `country`,
+        `confirmed` AS 'total_confirmed',
+        `deaths` AS 'total_deaths',
+        `recovered` AS 'total_recovered',
+        `active` AS 'total_active',
+        `date`
+        FROM `statistics`, (SELECT @n := 0) m WHERE `date` = :date
+        ORDER BY `confirmed` DESC";
+
+
+        $getAllStatisticsToday = $conn->prepare($getStatisticsQuery);
+        $getAllStatisticsYesterday = $conn->prepare($getStatisticsQuery);
+        $getAllStatisticsLastMonth = $conn->prepare($getStatisticsQuery);
+        $getAllStatisticsLastThreeMonths = $conn->prepare($getStatisticsQuery);
+
+        $getAllStatisticsToday->execute(['date' => $yesterday]);
+        $getAllStatisticsYesterday->execute(['date' => $ereyesterday]);
+        $getAllStatisticsLastMonth->execute(['date' => $lastMonth]);
+        $getAllStatisticsLastThreeMonths->execute(['date' => $lastThreeMonths]);
+
+        $getAllStatisticsToday = $getAllStatisticsToday->fetchAll(PDO::FETCH_ASSOC);
+        $getAllStatisticsYesterday = $getAllStatisticsYesterday->fetchAll(PDO::FETCH_ASSOC);
+        $getAllStatisticsLastMonth = $getAllStatisticsLastMonth->fetchAll(PDO::FETCH_ASSOC);
+        $getAllStatisticsLastThreeMonths = $getAllStatisticsLastThreeMonths->fetchAll(PDO::FETCH_ASSOC);
+
+        $data['today'] = [];
+        $data['monthly'] = [];
+        $data['three_months'] = [];
+
+        // Check if the data is not null.
+        if ($getAllStatisticsToday[0]["total_confirmed"] != null) {
+            // Looping all today statistics from countries, calculating new cases and pushing them in the data array with key statistics.
+
+            foreach ($getAllStatisticsToday as $key => $value) {
+                $todayStatistics = [
+                    'rank' => $getAllStatisticsToday[$key]["rank"],
+                    'slug' => $getAllStatisticsToday[$key]["slug"],
+                    'country' => $getAllStatisticsToday[$key]["country"],
+                    'total_confirmed' => $getAllStatisticsToday[$key]["total_confirmed"],
+                    'total_deaths' => $getAllStatisticsToday[$key]["total_deaths"],
+                    'total_recovered' => $getAllStatisticsToday[$key]["total_recovered"],
+                    'total_active' => $getAllStatisticsToday[$key]["total_active"],
+
+                    'new_confirmed' => $getAllStatisticsToday[$key]["total_confirmed"] - $getAllStatisticsYesterday[$key]["total_confirmed"],
+                    'new_deaths' => $getAllStatisticsToday[$key]["total_deaths"] - $getAllStatisticsYesterday[$key]["total_deaths"],
+                    'new_recovered' => $getAllStatisticsToday[$key]["total_recovered"] - $getAllStatisticsYesterday[$key]["total_recovered"],
+                    'new_active' => $getAllStatisticsToday[$key]["total_active"] - $getAllStatisticsYesterday[$key]["total_active"],
+                    'date' => $getAllStatisticsToday[$key]["date"],
+                ];
+
+                $monthlyStatistics = [
+                    'rank' => $getAllStatisticsToday[$key]["rank"],
+                    'slug' => $getAllStatisticsToday[$key]["slug"],
+                    'country' => $getAllStatisticsToday[$key]["country"],
+                    'total_confirmed' => $getAllStatisticsToday[$key]["total_confirmed"],
+                    'total_deaths' => $getAllStatisticsToday[$key]["total_deaths"],
+                    'total_recovered' => $getAllStatisticsToday[$key]["total_recovered"],
+                    'total_active' => $getAllStatisticsToday[$key]["total_active"],
+
+                    'new_confirmed' => $getAllStatisticsToday[$key]["total_confirmed"] - $getAllStatisticsLastMonth[$key]["total_confirmed"],
+                    'new_deaths' => $getAllStatisticsToday[$key]["total_deaths"] - $getAllStatisticsLastMonth[$key]["total_deaths"],
+                    'new_recovered' => $getAllStatisticsToday[$key]["total_recovered"] - $getAllStatisticsLastMonth[$key]["total_recovered"],
+                    'new_active' => $getAllStatisticsToday[$key]["total_active"] - $getAllStatisticsLastMonth[$key]["total_active"],
+                    'date' => $getAllStatisticsToday[$key]["date"],
+                ];
+
+                $lastThreeMonthsStatistics = [
+                    'rank' => $getAllStatisticsToday[$key]["rank"],
+                    'slug' => $getAllStatisticsToday[$key]["slug"],
+                    'country' => $getAllStatisticsToday[$key]["country"],
+                    'total_confirmed' => $getAllStatisticsToday[$key]["total_confirmed"],
+                    'total_deaths' => $getAllStatisticsToday[$key]["total_deaths"],
+                    'total_recovered' => $getAllStatisticsToday[$key]["total_recovered"],
+                    'total_active' => $getAllStatisticsToday[$key]["total_active"],
+
+                    'new_confirmed' => $getAllStatisticsToday[$key]["total_confirmed"] - $getAllStatisticsLastThreeMonths[$key]["total_confirmed"],
+                    'new_deaths' => $getAllStatisticsToday[$key]["total_deaths"] - $getAllStatisticsLastThreeMonths[$key]["total_deaths"],
+                    'new_recovered' => $getAllStatisticsToday[$key]["total_recovered"] - $getAllStatisticsLastThreeMonths[$key]["total_recovered"],
+                    'new_active' => $getAllStatisticsToday[$key]["total_active"] - $getAllStatisticsLastThreeMonths[$key]["total_active"],
+                    'date' => $getAllStatisticsToday[$key]["date"],
+                ];
+
+                array_push($data['today'], $todayStatistics);
+                array_push($data['monthly'], $monthlyStatistics);
+                array_push($data['three_months'], $lastThreeMonthsStatistics);
+            }
             echo json_encode($data);
             // echo "<pre>";
             // print_r($data);

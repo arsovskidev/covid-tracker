@@ -19,7 +19,7 @@ $(function () {
       recovered.push(value["recovered"]);
     });
 
-    daily_chart.updateOptions({
+    dailyChart.updateOptions({
       xaxis: {
         categories: dates,
         labels: {
@@ -28,7 +28,7 @@ $(function () {
       },
     });
 
-    daily_chart.updateSeries([
+    dailyChart.updateSeries([
       {
         name: "Confirmed",
         data: confirmed,
@@ -48,10 +48,33 @@ $(function () {
     ]);
   }
 
-  // Daily data chart.
-  const daily_chart_config = {
+  function updateGrid(array) {
+    if (array != undefined) {
+      grid
+        .updateConfig({
+          data: () =>
+            array.map((country) => [
+              country.rank,
+              country.country,
+              numberWithCommas(country.total_confirmed),
+              numberWithCommas(country.total_deaths),
+              numberWithCommas(country.total_recovered),
+              numberWithCommas(country.total_active),
+              numberWithCommas(country.new_confirmed),
+              numberWithCommas(country.new_deaths),
+              numberWithCommas(country.new_recovered),
+              numberWithCommas(country.new_active),
+            ]),
+        })
+        .forceRender();
+    } else {
+      console.log("No connection.");
+    }
+  }
+
+  const dailyChartConfig = {
     chart: {
-      id: "daily_chart",
+      id: "dailyChart",
       height: 350,
       type: "line",
     },
@@ -68,22 +91,22 @@ $(function () {
     },
   };
 
-  const daily_chart = new ApexCharts(
+  const dailyChart = new ApexCharts(
     document.querySelector("#daily-chart"),
-    daily_chart_config
+    dailyChartConfig
   );
 
-  daily_chart.render();
+  dailyChart.render();
 
-  let allCountriesStatistics = [];
+  let gridData = [];
 
+  // Get all countries.
   $.ajax({
     type: "GET",
     url: "../backend/api/v1.php?list-countries",
     dataType: "json",
     async: false,
     success: function (countries) {
-      allCountriesStatistics = countries["statistics"];
       $.each(countries["countries"], function (index, value) {
         let node = `<option value="${value["slug"]}">${value["country"]}</option>`;
         $("#countries-option").append(node);
@@ -91,6 +114,7 @@ $(function () {
     },
   });
 
+  // Get today statistics for global.
   $.ajax({
     type: "GET",
     url: "../backend/api/v1.php?list-statistics=global",
@@ -129,7 +153,18 @@ $(function () {
     },
   });
 
-  new gridjs.Grid({
+  // Get grid data.
+  $.ajax({
+    type: "GET",
+    url: "../backend/api/v1.php?list-grid-data",
+    dataType: "json",
+    async: false,
+    success: function (statistics) {
+      gridData = statistics;
+    },
+  });
+
+  const grid = new gridjs.Grid({
     columns: [
       { id: "rank", name: "Rank" },
       { id: "slug", name: "Country" },
@@ -137,16 +172,12 @@ $(function () {
       { id: "total_deaths", name: "Total Deaths" },
       { id: "total_recovered", name: "Total Recovered" },
       { id: "total_active", name: "Total Active" },
+      { id: "new_confirmed", name: "New Confirmed" },
+      { id: "new_deaths", name: "New Deaths" },
+      { id: "new_recovered", name: "New Recovered" },
+      { id: "new_active", name: "New Active" },
     ],
-    data: () =>
-      allCountriesStatistics.map((country) => [
-        country.rank,
-        country.country,
-        numberWithCommas(country.total_confirmed),
-        numberWithCommas(country.total_deaths),
-        numberWithCommas(country.total_recovered),
-        numberWithCommas(country.total_active),
-      ]),
+    data: [],
     search: {
       enabled: true,
     },
@@ -155,7 +186,14 @@ $(function () {
       limit: 10,
       summary: true,
     },
+    style: {
+      table: {
+        "font-size": "14px",
+      },
+    },
   }).render(document.getElementById("countries-grid"));
+
+  updateGrid(gridData["today"]);
 
   $("#apply-filter").on("click", function () {
     timeOptionSelected = $("#time-option option").filter(":selected").text();
@@ -214,42 +252,54 @@ $(function () {
       },
     });
 
-    if (timeOptionSelected == "Today") {
-      $("#new-active").text(
-        numberWithCommas(country["summary"]["new"]["today"]["new_active"])
-      );
-      $("#new-deaths").text(
-        numberWithCommas(country["summary"]["new"]["today"]["new_deaths"])
-      );
-      $("#new-recovered").text(
-        numberWithCommas(country["summary"]["new"]["today"]["new_recovered"])
-      );
-    } else if (timeOptionSelected == "Monthly") {
-      $("#new-active").text(
-        numberWithCommas(country["summary"]["new"]["monthly"]["new_active"])
-      );
-      $("#new-deaths").text(
-        numberWithCommas(country["summary"]["new"]["monthly"]["new_deaths"])
-      );
-      $("#new-recovered").text(
-        numberWithCommas(country["summary"]["new"]["monthly"]["new_recovered"])
-      );
+    if (country["summary"] != undefined) {
+      if (timeOptionSelected == "Today") {
+        updateGrid(gridData["today"]);
+
+        $("#new-active").text(
+          numberWithCommas(country["summary"]["new"]["today"]["new_active"])
+        );
+        $("#new-deaths").text(
+          numberWithCommas(country["summary"]["new"]["today"]["new_deaths"])
+        );
+        $("#new-recovered").text(
+          numberWithCommas(country["summary"]["new"]["today"]["new_recovered"])
+        );
+      } else if (timeOptionSelected == "Monthly") {
+        updateGrid(gridData["monthly"]);
+
+        $("#new-active").text(
+          numberWithCommas(country["summary"]["new"]["monthly"]["new_active"])
+        );
+        $("#new-deaths").text(
+          numberWithCommas(country["summary"]["new"]["monthly"]["new_deaths"])
+        );
+        $("#new-recovered").text(
+          numberWithCommas(
+            country["summary"]["new"]["monthly"]["new_recovered"]
+          )
+        );
+      } else {
+        updateGrid(gridData["three_months"]);
+
+        $("#new-active").text(
+          numberWithCommas(
+            country["summary"]["new"]["three_months"]["new_active"]
+          )
+        );
+        $("#new-deaths").text(
+          numberWithCommas(
+            country["summary"]["new"]["three_months"]["new_deaths"]
+          )
+        );
+        $("#new-recovered").text(
+          numberWithCommas(
+            country["summary"]["new"]["three_months"]["new_recovered"]
+          )
+        );
+      }
     } else {
-      $("#new-active").text(
-        numberWithCommas(
-          country["summary"]["new"]["three_months"]["new_active"]
-        )
-      );
-      $("#new-deaths").text(
-        numberWithCommas(
-          country["summary"]["new"]["three_months"]["new_deaths"]
-        )
-      );
-      $("#new-recovered").text(
-        numberWithCommas(
-          country["summary"]["new"]["three_months"]["new_recovered"]
-        )
-      );
+      console.log("There is something wrong with the response.");
     }
   });
 });
