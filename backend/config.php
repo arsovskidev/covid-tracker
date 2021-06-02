@@ -18,7 +18,7 @@ try {
     $conn = new PDO("mysql:host=" . HOSTNAME . ";dbname=" . DATABASE, USERNAME, PASSWORD);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    echo "There is an error in database connection. Please check logs!";
+    echo "There is an error in database connection. Please check logs!\n";
     file_put_contents(dirname(__FILE__) . '/logs/' . $today . '.log', $e . PHP_EOL, FILE_APPEND);
     die();
 }

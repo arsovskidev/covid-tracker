@@ -17,6 +17,6 @@ $createStatisticsTable = "CREATE TABLE IF NOT EXISTS `covid-tracker`.`statistics
 
 $conn->exec($createStatisticsTable);
 
-echo "Current date is " . $today . " UTC. \n";
+echo "Current date is " . $today . " UTC.\n";
 $allCountries = getCountries($conn);
 writeStatistics($conn, $allCountries, "2020-05-01", $today);

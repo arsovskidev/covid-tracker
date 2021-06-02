@@ -123,7 +123,7 @@ $(function () {
     success: function (stats) {
       updateDailyChart(stats["daily-chart"]);
       $("#graph-country").text(
-        "Worldwide's line chart showcased every 10th day."
+        "Worldwide's line chart showcased every 7th day."
       );
 
       $("#total-confirmed").text(

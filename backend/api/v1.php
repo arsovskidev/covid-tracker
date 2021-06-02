@@ -55,7 +55,6 @@ try {
             SUM(`recovered`) AS 'recovered',
             SUM(`active`) AS 'active'
             FROM `statistics`
-            WHERE `date` LIKE '%0'
             GROUP BY `date`
             ORDER BY `date` ASC");
 
@@ -98,7 +97,7 @@ try {
             $getChartData = $conn->prepare("
             SELECT `date`, `confirmed`, `deaths`, `recovered`, `active`
             FROM `statistics`
-            WHERE slug = :slug AND `date` LIKE '%0'
+            WHERE slug = :slug
             ORDER BY `date` ASC");
 
             $getTotalToday->execute(['date' => $yesterday, 'slug' => $slug]);
@@ -139,7 +138,12 @@ try {
                 "new_recovered" => $getTotalToday["total_recovered"] - $getTotalLastThreeMonths["total_recovered"],
                 "new_active" => $getTotalToday["total_active"] - $getTotalLastThreeMonths["total_active"],
             ];
-            $data["daily-chart"] = $getChartData;
+
+            // Get every 7th day to lower the rendering time.
+            for ($i = 0; $i < count($getChartData); $i += 7) {
+                $data["daily-chart"][] = $getChartData[$i];
+            }
+
             echo json_encode($data);
             // echo "<pre>";
             // print_r($data);
