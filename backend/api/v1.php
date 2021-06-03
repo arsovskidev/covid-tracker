@@ -249,7 +249,7 @@ try {
         }
     }
 } catch (Exception $e) {
-    echo "\nThere is an error getting response from database. Please check logs!";
+    echo 500;
     file_put_contents('../logs/' . $today . '.log', $e . PHP_EOL, FILE_APPEND);
     die();
 }

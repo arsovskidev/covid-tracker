@@ -19,6 +19,7 @@ function getCountries($conn)
     while (empty($countries["Countries"]) && $retry < 5) {
         echo "Retrying connection in 5 seconds!\n";
         sleep(5);
+
         $countries = curl_exec($cURLConnection);
         $countries = json_decode($countries, true);
         $retry++;
@@ -43,6 +44,6 @@ function getCountries($conn)
         array_push($allCountries, $data);
     }
 
-    echo "Finished getting all the countries.\n";
+    echo "Finished getting all countries.\n";
     return $allCountries;
 }
