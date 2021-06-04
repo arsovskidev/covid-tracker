@@ -67,31 +67,31 @@ try {
         } else {
 
             $getTotalToday = $conn->prepare("
-            SELECT SUM(`confirmed`) AS 'total_confirmed',
-            SUM(`deaths`) AS 'total_deaths',
-            SUM(`recovered`) AS 'total_recovered',
-            SUM(`active`) AS 'total_active'
+            SELECT `confirmed` AS 'total_confirmed',
+            `deaths` AS 'total_deaths',
+            `recovered` AS 'total_recovered',
+            `active` AS 'total_active'
             FROM `statistics` WHERE `date` = :date AND slug = :slug");
 
             $getTotalYesterday = $conn->prepare("
-            SELECT SUM(`confirmed`) AS 'total_confirmed',
-            SUM(`deaths`) AS 'total_deaths',
-            SUM(`recovered`) AS 'total_recovered',
-            SUM(`active`) AS 'total_active'
+            SELECT `confirmed` AS 'total_confirmed',
+            `deaths` AS 'total_deaths',
+            `recovered` AS 'total_recovered',
+            `active` AS 'total_active'
             FROM `statistics` WHERE `date` = :date AND slug = :slug");
 
             $getTotalLastMonth = $conn->prepare("
-            SELECT SUM(`confirmed`) AS 'total_confirmed',
-            SUM(`deaths`) AS 'total_deaths',
-            SUM(`recovered`) AS 'total_recovered',
-            SUM(`active`) AS 'total_active'
+            SELECT `confirmed` AS 'total_confirmed',
+            `deaths` AS 'total_deaths',
+            `recovered` AS 'total_recovered',
+            `active` AS 'total_active'
             FROM `statistics` WHERE `date` = :date AND `slug` = :slug ");
 
             $getTotalLastThreeMonths = $conn->prepare("
-            SELECT SUM(`confirmed`) AS 'total_confirmed',
-            SUM(`deaths`) AS 'total_deaths',
-            SUM(`recovered`) AS 'total_recovered',
-            SUM(`active`) AS 'total_active'
+            SELECT `confirmed` AS 'total_confirmed',
+            `deaths` AS 'total_deaths',
+            `recovered` AS 'total_recovered',
+            `active` AS 'total_active'
             FROM `statistics` WHERE `date` = :date AND `slug` = :slug ");
 
             $getChartData = $conn->prepare("
@@ -145,6 +145,8 @@ try {
             }
 
             echo json_encode($data);
+            // echo "<pre>";
+            // print_r($data);
         } else {
             echo 400;
         }
@@ -247,7 +249,7 @@ try {
         }
     }
 } catch (Exception $e) {
-    echo 500;
+    echo "\nThere is an error getting response from database. Please check logs!";
     file_put_contents('../logs/' . $today . '.log', $e . PHP_EOL, FILE_APPEND);
     die();
 }
