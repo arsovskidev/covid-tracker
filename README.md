@@ -4,7 +4,7 @@
 
 ![](https://img.shields.io/badge/html5%20-%23323330.svg?&style=for-the-badge&logo=html5&logoColor=%23E34F26) ![](https://img.shields.io/badge/css3%20-%23323330.svg?&style=for-the-badge&logo=css3&logoColor=%231572B6) ![](https://img.shields.io/badge/javascript%20-%23323330.svg?&style=for-the-badge&logo=javascript&logoColor=%23F7DF1E) ![](https://img.shields.io/badge/php-%23323330.svg?&style=for-the-badge&logo=php&logoColor=%23777BB4) ![](https://img.shields.io/badge/mysql-%23323330.svg?&style=for-the-badge&logo=mysql&logoColor=white)
 
-<img src="https://i.imgur.com/ejWYmTU.png" width="750" />
+<img src="https://i.imgur.com/2VQVLLx.png"/>
 
 # Installation
 

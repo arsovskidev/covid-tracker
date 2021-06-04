@@ -49,27 +49,23 @@ $(function () {
   }
 
   function updateGrid(array) {
-    if (array != undefined) {
-      grid
-        .updateConfig({
-          data: () =>
-            array.map((country) => [
-              country.rank,
-              country.country,
-              numberWithCommas(country.total_confirmed),
-              numberWithCommas(country.total_deaths),
-              numberWithCommas(country.total_recovered),
-              numberWithCommas(country.total_active),
-              numberWithCommas(country.new_confirmed),
-              numberWithCommas(country.new_deaths),
-              numberWithCommas(country.new_recovered),
-              numberWithCommas(country.new_active),
-            ]),
-        })
-        .forceRender();
-    } else {
-      console.log("No connection.");
-    }
+    grid
+      .updateConfig({
+        data: () =>
+          array.map((country) => [
+            country.rank,
+            country.country,
+            numberWithCommas(country.total_confirmed),
+            numberWithCommas(country.total_deaths),
+            numberWithCommas(country.total_recovered),
+            numberWithCommas(country.total_active),
+            numberWithCommas(country.new_confirmed),
+            numberWithCommas(country.new_deaths),
+            numberWithCommas(country.new_recovered),
+            numberWithCommas(country.new_active),
+          ]),
+      })
+      .forceRender();
   }
 
   const dailyChartConfig = {
@@ -95,74 +91,7 @@ $(function () {
     document.querySelector("#daily-chart"),
     dailyChartConfig
   );
-
   dailyChart.render();
-
-  let gridData = [];
-
-  // Get all countries.
-  $.ajax({
-    type: "GET",
-    url: "../backend/api/v1.php?list-countries",
-    dataType: "json",
-    async: false,
-    success: function (countries) {
-      $.each(countries["countries"], function (index, value) {
-        let node = `<option value="${value["slug"]}">${value["country"]}</option>`;
-        $("#countries-option").append(node);
-      });
-    },
-  });
-
-  // Get today statistics for global.
-  $.ajax({
-    type: "GET",
-    url: "../backend/api/v1.php?list-statistics=global",
-    dataType: "json",
-    async: false,
-    success: function (stats) {
-      updateDailyChart(stats["daily-chart"]);
-      $("#graph-country").text(
-        "Worldwide's line chart showcased every 7th day."
-      );
-
-      $("#total-confirmed").text(
-        numberWithCommas(stats["summary"]["total"]["total_confirmed"])
-      );
-      $("#total-active").text(
-        numberWithCommas(stats["summary"]["total"]["total_active"])
-      );
-      $("#total-recovered").text(
-        numberWithCommas(stats["summary"]["total"]["total_recovered"])
-      );
-      $("#total-deaths").text(
-        numberWithCommas(stats["summary"]["total"]["total_deaths"])
-      );
-
-      $("#new-active").text(
-        numberWithCommas(stats["summary"]["new"]["today"]["new_active"])
-      );
-      $("#new-deaths").text(
-        numberWithCommas(stats["summary"]["new"]["today"]["new_deaths"])
-      );
-      $("#new-recovered").text(
-        numberWithCommas(stats["summary"]["new"]["today"]["new_recovered"])
-      );
-
-      alertify.message("Last synced on " + stats["synced"], 5);
-    },
-  });
-
-  // Get grid data.
-  $.ajax({
-    type: "GET",
-    url: "../backend/api/v1.php?list-grid-data",
-    dataType: "json",
-    async: false,
-    success: function (statistics) {
-      gridData = statistics;
-    },
-  });
 
   const grid = new gridjs.Grid({
     columns: [
@@ -193,7 +122,80 @@ $(function () {
     },
   }).render(document.getElementById("countries-grid"));
 
-  updateGrid(gridData["today"]);
+  let gridData = [];
+
+  // Get all countries.
+  $.ajax({
+    type: "GET",
+    url: "../backend/api/v1.php?list-countries",
+    dataType: "json",
+    success: function (countries) {
+      if (countries != 500 && countries != 400) {
+        $.each(countries["countries"], function (index, value) {
+          let node = `<option value="${value["slug"]}">${value["country"]}</option>`;
+          $("#countries-option").append(node);
+        });
+      } else {
+        alertify.error("Internal Server Error.");
+        console.log(
+          "Oops!\nThis is awkward.\nWe encountered a 500 Internal Server Error."
+        );
+      }
+    },
+  });
+
+  // Get today statistics for global.
+  $.ajax({
+    type: "GET",
+    url: "../backend/api/v1.php?list-statistics=global",
+    dataType: "json",
+    success: function (stats) {
+      if (stats != 500 && stats != 400) {
+        updateDailyChart(stats["daily-chart"]);
+        $("#graph-country").text(
+          "Worldwide's line chart showcased every 7th day."
+        );
+
+        $("#total-confirmed").text(
+          numberWithCommas(stats["summary"]["total"]["total_confirmed"])
+        );
+        $("#total-active").text(
+          numberWithCommas(stats["summary"]["total"]["total_active"])
+        );
+        $("#total-recovered").text(
+          numberWithCommas(stats["summary"]["total"]["total_recovered"])
+        );
+        $("#total-deaths").text(
+          numberWithCommas(stats["summary"]["total"]["total_deaths"])
+        );
+
+        $("#new-active").text(
+          numberWithCommas(stats["summary"]["new"]["today"]["new_active"])
+        );
+        $("#new-deaths").text(
+          numberWithCommas(stats["summary"]["new"]["today"]["new_deaths"])
+        );
+        $("#new-recovered").text(
+          numberWithCommas(stats["summary"]["new"]["today"]["new_recovered"])
+        );
+
+        alertify.message("Last synced on " + stats["synced"], 5);
+      }
+    },
+  });
+
+  // Get grid data.
+  $.ajax({
+    type: "GET",
+    url: "../backend/api/v1.php?list-grid-data",
+    dataType: "json",
+    success: function (statistics) {
+      if (statistics != 500 && statistics != 400) {
+        gridData = statistics;
+        updateGrid(gridData["today"]);
+      }
+    },
+  });
 
   $("#apply-filter").on("click", function () {
     timeOptionSelected = $("#time-option option").filter(":selected").text();
@@ -205,7 +207,7 @@ $(function () {
       .text();
 
     $("#graph-country").text(
-      countriesOptionSelectedText + "'s line chart showcased every 10th day."
+      countriesOptionSelectedText + "'s line chart showcased every 7th day."
     );
 
     let country = [];
@@ -215,9 +217,8 @@ $(function () {
       url:
         "../backend/api/v1.php?list-statistics=" + countriesOptionSelectedValue,
       dataType: "json",
-      async: false,
       success: function (stats) {
-        if (stats != 400) {
+        if (stats != 500 && stats != 400) {
           country = stats;
           updateDailyChart(stats["daily-chart"]);
 
@@ -234,6 +235,58 @@ $(function () {
             numberWithCommas(country["summary"]["total"]["total_deaths"])
           );
 
+          if (timeOptionSelected == "Today") {
+            updateGrid(gridData["today"]);
+
+            $("#new-active").text(
+              numberWithCommas(country["summary"]["new"]["today"]["new_active"])
+            );
+            $("#new-deaths").text(
+              numberWithCommas(country["summary"]["new"]["today"]["new_deaths"])
+            );
+            $("#new-recovered").text(
+              numberWithCommas(
+                country["summary"]["new"]["today"]["new_recovered"]
+              )
+            );
+          } else if (timeOptionSelected == "Monthly") {
+            updateGrid(gridData["monthly"]);
+
+            $("#new-active").text(
+              numberWithCommas(
+                country["summary"]["new"]["monthly"]["new_active"]
+              )
+            );
+            $("#new-deaths").text(
+              numberWithCommas(
+                country["summary"]["new"]["monthly"]["new_deaths"]
+              )
+            );
+            $("#new-recovered").text(
+              numberWithCommas(
+                country["summary"]["new"]["monthly"]["new_recovered"]
+              )
+            );
+          } else {
+            updateGrid(gridData["three_months"]);
+
+            $("#new-active").text(
+              numberWithCommas(
+                country["summary"]["new"]["three_months"]["new_active"]
+              )
+            );
+            $("#new-deaths").text(
+              numberWithCommas(
+                country["summary"]["new"]["three_months"]["new_deaths"]
+              )
+            );
+            $("#new-recovered").text(
+              numberWithCommas(
+                country["summary"]["new"]["three_months"]["new_recovered"]
+              )
+            );
+          }
+
           alertify.message(
             "Filter applied for " + countriesOptionSelectedText + "!",
             5
@@ -247,59 +300,9 @@ $(function () {
           $("#total-recovered").text("-");
           $("#new-recovered").text("-");
 
-          alertify.error("No data for this country!");
+          alertify.error("Internal Server Error!");
         }
       },
     });
-
-    if (country["summary"] != undefined) {
-      if (timeOptionSelected == "Today") {
-        updateGrid(gridData["today"]);
-
-        $("#new-active").text(
-          numberWithCommas(country["summary"]["new"]["today"]["new_active"])
-        );
-        $("#new-deaths").text(
-          numberWithCommas(country["summary"]["new"]["today"]["new_deaths"])
-        );
-        $("#new-recovered").text(
-          numberWithCommas(country["summary"]["new"]["today"]["new_recovered"])
-        );
-      } else if (timeOptionSelected == "Monthly") {
-        updateGrid(gridData["monthly"]);
-
-        $("#new-active").text(
-          numberWithCommas(country["summary"]["new"]["monthly"]["new_active"])
-        );
-        $("#new-deaths").text(
-          numberWithCommas(country["summary"]["new"]["monthly"]["new_deaths"])
-        );
-        $("#new-recovered").text(
-          numberWithCommas(
-            country["summary"]["new"]["monthly"]["new_recovered"]
-          )
-        );
-      } else {
-        updateGrid(gridData["three_months"]);
-
-        $("#new-active").text(
-          numberWithCommas(
-            country["summary"]["new"]["three_months"]["new_active"]
-          )
-        );
-        $("#new-deaths").text(
-          numberWithCommas(
-            country["summary"]["new"]["three_months"]["new_deaths"]
-          )
-        );
-        $("#new-recovered").text(
-          numberWithCommas(
-            country["summary"]["new"]["three_months"]["new_recovered"]
-          )
-        );
-      }
-    } else {
-      console.log("There is something wrong with the response.");
-    }
   });
 });

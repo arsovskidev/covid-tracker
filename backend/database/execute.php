@@ -1,7 +1,7 @@
 <?php
 require_once '../config.php';
-require_once 'get-countries.php';
-require_once 'write-statistics.php';
+require_once 'getCountries.php';
+require_once 'writeStatistics.php';
 
 ini_set('max_execution_time', 0);
 

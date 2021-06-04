@@ -1,16 +1,17 @@
 <?php
 
-function writeStatistics($conn, $array, $dateFrom, $dateTo)
+function writeStatistics($conn, $countries, $dateFrom, $dateTo)
 {
-    // Start SQL Transactions.
     echo "Starting to write statistics in database...\n";
+
+    // Start SQL Transactions.
     $conn->beginTransaction();
 
-    foreach ($array as $country) {
+    foreach ($countries as $country) {
         // Sleep for 1 second to prevent API Hammering.
         sleep(1);
 
-        // Get the total statistics for all dates on country from the API.
+        // Get the all days statistics for country from the API.
         $cURLConnection = curl_init();
 
         curl_setopt($cURLConnection, CURLOPT_URL, 'https://api.covid19api.com/total/country/' . $country['slug'] . '?from=' . $dateFrom . '&to=' . $dateTo);
@@ -26,12 +27,13 @@ function writeStatistics($conn, $array, $dateFrom, $dateTo)
         while (empty($statistics[0]) && $retry < 5) {
             echo "Retrying connection in 5 seconds!\n";
             sleep(5);
+
             $statistics = curl_exec($cURLConnection);
             $statistics = json_decode($statistics, true);
             $retry++;
 
             if ($retry === 5) {
-                echo "Failed 5 times, aborting stats for all country.\n";
+                echo "Failed 5 times, aborting stats for all countries.\n";
                 $conn->rollBack();
                 die();
             }
@@ -40,7 +42,6 @@ function writeStatistics($conn, $array, $dateFrom, $dateTo)
         curl_close($cURLConnection);
 
         try {
-            // Create pdo insert query. 
             $sql = "INSERT INTO 
                 statistics (id, slug, country, confirmed, deaths,
                 recovered, active, date)
@@ -66,13 +67,13 @@ function writeStatistics($conn, $array, $dateFrom, $dateTo)
                     // ID For statistics for each country is made up by the unix date of the stats added the country slug.
                     // This makes up unique id for each country and it's stats date.
                     // With this unique id it's easy just to update the days statistics whenever we want.
+                    // Hashing the id.
 
-                    // Hashing the id to create unique id hash.
                     $id = $dateToUnix . $country['slug'];
-                    $hash = md5($id);
+                    $idHash = md5($id);
 
                     $values = [
-                        'id' => $hash,
+                        'id' => $idHash,
                         'slug' => $country['slug'],
                         'country' => $day["Country"],
                         'confirmed' => $day["Confirmed"],
