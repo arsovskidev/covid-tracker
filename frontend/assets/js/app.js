@@ -169,6 +169,9 @@ $(function () {
           numberWithCommas(stats["summary"]["total"]["total_deaths"])
         );
 
+        $("#new-confirmed").text(
+          numberWithCommas(stats["summary"]["new"]["today"]["new_confirmed"])
+        );
         $("#new-active").text(
           numberWithCommas(stats["summary"]["new"]["today"]["new_active"])
         );
@@ -238,6 +241,11 @@ $(function () {
           if (timeOptionSelected == "Today") {
             updateGrid(gridData["today"]);
 
+            $("#new-confirmed").text(
+              numberWithCommas(
+                country["summary"]["new"]["today"]["new_confirmed"]
+              )
+            );
             $("#new-active").text(
               numberWithCommas(country["summary"]["new"]["today"]["new_active"])
             );
@@ -252,6 +260,11 @@ $(function () {
           } else if (timeOptionSelected == "Monthly") {
             updateGrid(gridData["monthly"]);
 
+            $("#new-confirmed").text(
+              numberWithCommas(
+                country["summary"]["new"]["monthly"]["new_confirmed"]
+              )
+            );
             $("#new-active").text(
               numberWithCommas(
                 country["summary"]["new"]["monthly"]["new_active"]
@@ -270,6 +283,11 @@ $(function () {
           } else {
             updateGrid(gridData["three_months"]);
 
+            $("#new-confirmed").text(
+              numberWithCommas(
+                country["summary"]["new"]["three_months"]["new_confirmed"]
+              )
+            );
             $("#new-active").text(
               numberWithCommas(
                 country["summary"]["new"]["three_months"]["new_active"]
@@ -293,6 +311,7 @@ $(function () {
           );
         } else {
           $("#total-confirmed").text("-");
+          $("#new-confirmed").text("-");
           $("#total-active").text("-");
           $("#new-active").text("-");
           $("#total-deaths").text("-");
