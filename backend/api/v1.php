@@ -145,8 +145,6 @@ try {
             }
 
             echo json_encode($data);
-            // echo "<pre>";
-            // print_r($data);
         } else {
             echo 400;
         }
